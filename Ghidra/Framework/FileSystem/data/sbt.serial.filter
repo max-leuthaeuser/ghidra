@@ -1,0 +1,18 @@
+# sbt forked test protocol deserialization filter patterns.
+# See serialFilterREADME.md in this directory for the file format.
+#
+# When Ghidra is initialized inside a forked sbt test JVM (e.g. joern's ghidra2cpg tests),
+# the JVM-wide filter established from these files also applies to the control socket sbt
+# uses to talk to that JVM: at the end of every test run the forked JVM deserializes an
+# sbt.ForkTags acknowledgement sent by the sbt process. Without the entries below, that
+# read is rejected ("Rejected class serialization(not allowed): sbt.ForkTags") and the
+# control socket is torn down, which can fail the whole test task with
+# "Forked test harness failed: java.net.SocketException: Broken pipe".
+
+# sbt's forked test protocol messages (sbt.ForkTags, sbt.ForkConfiguration, ...)
+sbt.**;
+
+# Superclasses of the sbt.ForkTags enum acknowledgement. Also allowed by
+# Ghidra/Features/GhidraServer/data/serial.filter, which is not shipped in this jar.
+java.lang.Enum;
+java.lang.Object;
